@@ -27,6 +27,10 @@ class MemoryString {
   public int getMaxStreak(){
     return this.maxStreak;
   }
+  
+  public void restartStreak(){
+    this.currentIndex=0;
+  }
  
   public void drawCurrentStreak(){
     text("Current Streak: " + str(this.currentIndex), width-150, height-50);

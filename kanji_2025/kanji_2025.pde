@@ -64,6 +64,8 @@ void keyPressed() {
     } else {
        // incorrect
        println("Incorrect");
+       memoryString.restartStreak();
+       nextTarget();
     }
     guess = "";
     break;
