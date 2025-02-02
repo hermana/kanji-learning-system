@@ -65,6 +65,7 @@ void keyPressed() {
   case ENTER:
     if(state == IState.NO_MORE_PEEKS){
       memoryString.restartStreak();
+      nextTarget();
       currPeeks = 0;
       state = IState.TRIAL;
     }else{
