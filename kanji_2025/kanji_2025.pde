@@ -1,9 +1,11 @@
 PFont jFont;
 enum IState {
-  CTRL, TRIAL
+  CTRL, TRIAL, NO_MORE_PEEKS
 }
 IState state = IState.TRIAL;
 PImage cheatSheet;
+int MAX_PEEKS = 10;
+int currPeeks;
 MemoryString memoryString;
 Character target;
 String guess = "";
@@ -18,7 +20,7 @@ void setup() {
   for (String[] spec : characters) {
     kanji.add(new Character(spec[0], spec[1], spec[2], spec[3]));
   }
-
+  currPeeks = 0;
   //initialize memory string
   memoryString = new MemoryString(kanji);
 
@@ -35,11 +37,15 @@ void draw() {
     target.drawAsTarget();
     textSize(32);
     text(guess, width/2, height/2 + 100);
+    text("You may look at the cheatsheet "+str(getRemainingSneakPeeks())+" more times.", 500, 100); 
     memoryString.drawCurrentStreak();
     memoryString.drawMaxStreak();
     break;
   case CTRL:
     image(cheatSheet, 0, 0);
+    break;
+  case NO_MORE_PEEKS:
+    text("You have exceeded the number of times \n you may look at the cheat sheet.", width/2, height/2);
     break;
   }
 }
@@ -47,7 +53,8 @@ void draw() {
 void keyPressed() {
   switch(keyCode) {
   case CONTROL:
-    state = IState.CTRL;
+    currPeeks+=1;
+    state = currPeeks>MAX_PEEKS ? IState.NO_MORE_PEEKS : IState.CTRL;
     break;
   case BACKSPACE:
     guess = guess.substring(0, guess.length()-1);
@@ -56,18 +63,24 @@ void keyPressed() {
     guess = guess.substring(0, guess.length()-1);
     break;
   case ENTER:
-    if (target.checkGuess(guess)) {
-       // correct 
-       println("Correct");
-       memoryString.updateStreak();
-       nextTarget();
-    } else {
-       // incorrect
-       println("Incorrect");
-       memoryString.restartStreak();
-       nextTarget();
+    if(state == IState.NO_MORE_PEEKS){
+      memoryString.restartStreak();
+      currPeeks = 0;
+      state = IState.TRIAL;
+    }else{
+      if (target.checkGuess(guess)) {
+         // correct 
+         println("Correct");
+         memoryString.updateStreak();
+         nextTarget();
+      } else {
+         // incorrect
+         println("Incorrect");
+         memoryString.restartStreak();
+         nextTarget();
+      }
+      guess = "";
     }
-    guess = "";
     break;
   default:
     guess += key;
@@ -88,6 +101,10 @@ void keyReleased() {
 void nextTarget() {
   target = memoryString.getCurrentCharacter();
   state = IState.TRIAL;
+}
+
+int getRemainingSneakPeeks(){
+  return MAX_PEEKS - currPeeks;
 }
 
 void drawCheatSheet() {
