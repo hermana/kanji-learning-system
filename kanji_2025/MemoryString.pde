@@ -1,3 +1,5 @@
+import java.util.Collections;
+
 class MemoryString {
 
   ArrayList<Character> fullMemoryString;
@@ -6,6 +8,7 @@ class MemoryString {
 
   public MemoryString (ArrayList<Character> characters) {
     this.fullMemoryString = characters;
+    Collections.shuffle(this.fullMemoryString);
     this.currentIndex = 0;
     this.maxStreak = 0;
   }
